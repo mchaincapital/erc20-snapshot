@@ -2,11 +2,11 @@
 var BigNumber = require("bignumber.js");
 const enumerable = require("linq");
 
-module.exports.createBalances = async data => {
+module.exports.createBalances = async (data) => {
   const balances = new Map();
   const closingBalances = [];
 
-  const setDeposits = event => {
+  const setDeposits = (event) => {
     const wallet = event.to;
 
     let deposits = (balances.get(wallet) || {}).deposits || new BigNumber(0);
@@ -18,7 +18,7 @@ module.exports.createBalances = async data => {
     }
   };
 
-  const setWithdrawals = event => {
+  const setWithdrawals = (event) => {
     const wallet = event.from;
 
     let deposits = (balances.get(wallet) || {}).deposits || new BigNumber(0);
@@ -44,12 +44,12 @@ module.exports.createBalances = async data => {
 
     closingBalances.push({
       wallet: key,
-      balance: balance.div(10 ** parseInt(data.decimals)).toFixed(data.decimals)
+      balance: balance.div(10 ** parseInt(data.decimals)).toFixed(18)
     });
   }
 
   return enumerable
     .from(closingBalances)
-    .orderByDescending(x => parseFloat(x.balance))
+    .orderByDescending((x) => parseFloat(x.balance))
     .toArray();
 };
